@@ -1,27 +1,35 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 from app import models
-from app.database import engine
-from app.routers import post, user, auth, vote  
-from .config import settings
+from app.database import get_db, engine
+from app.models import User
+from passlib.context import CryptContext
+from app.routers import post, user, auth, vote
+from app.config import SECRET_KEY
 
-SQLALCHEMY_DATABASE_URL = f"postgresql://postgres:Vd11-11-@localhost:5432/fastapi"
-
-
-models.Base.metadata.create_all(bind=engine)
-
-app = FastAPI()
+fastapi_app = FastAPI()
 
 
-app.include_router(post.router)
-app.include_router(user.router)
-app.include_router(auth.router)
-app.include_router(vote.router)
+fastapi_app.include_router(post.router)
+fastapi_app.include_router(user.router)
+fastapi_app.include_router(auth.router)
+fastapi_app.include_router(vote.router)
 
 
-for route in app.routes:
-    print(route.path, route.methods)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-@app.get("/")
-def root():
-    return {"message": "Hello, Welcome To My API"}
+@fastapi_app.on_event("startup")
+def on_startup():
+    print("FastAPI app started. Creating database tables...")
+   
+    models.Base.metadata.create_all(bind=engine)
+    
+
+def get_db():
+    db = db.SessionLocal() 
+    try:
+        yield db
+    finally:
+        db.close()

@@ -79,3 +79,12 @@ class TokenData(BaseModel):
 class Vote(BaseModel):
     post_id: int
     dir: int  
+    
+class OTPVerification(BaseModel):
+    email: EmailStr
+    otp: str
+    
+    
+class LoginRequest(BaseModel):
+    email: str
+    password: str
