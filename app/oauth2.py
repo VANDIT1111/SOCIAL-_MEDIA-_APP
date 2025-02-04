@@ -9,6 +9,7 @@ from app import schemas, models
 from app.database import get_db
 from .config import settings 
 
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
@@ -72,3 +73,5 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
 
     return user
+
+

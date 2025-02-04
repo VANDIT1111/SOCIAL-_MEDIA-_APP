@@ -5,7 +5,7 @@ from app import models
 from app.database import get_db, engine
 from app.models import User
 from passlib.context import CryptContext
-from app.routers import post, user, auth, vote
+from app.routers import post, user, auth, vote, follow
 from app.config import SECRET_KEY
 
 fastapi_app = FastAPI()
@@ -15,6 +15,7 @@ fastapi_app.include_router(post.router)
 fastapi_app.include_router(user.router)
 fastapi_app.include_router(auth.router)
 fastapi_app.include_router(vote.router)
+fastapi_app.include_router(follow.router)
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

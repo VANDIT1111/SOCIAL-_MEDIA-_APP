@@ -47,7 +47,4 @@ def vote(
             detail="Invalid vote direction, must be 1 or 0"
         )
 
-    # except Exception as e:
-        
-    #     print(f"Error occurred: {e}")
-    #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
+   

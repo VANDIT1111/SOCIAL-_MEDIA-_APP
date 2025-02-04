@@ -1,11 +1,15 @@
+from fastapi import FastAPI, HTTPException
 from passlib.context import CryptContext
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-import random
 import aiosmtplib
 from email.message import EmailMessage
-from datetime import datetime, timedelta
 from dotenv import load_dotenv
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import os
+from .config import settings
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 load_dotenv()
 
@@ -42,3 +46,5 @@ def hash(password: str):
 
 def verify(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
+
+

@@ -7,10 +7,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from jose import jwt
 from app.database import get_db
-from app.models import User
-from app.utils import send_email_otp
-from app.oauth2 import SECRET_KEY, ALGORITHM
-from app.schemas import OTPVerification, LoginRequest
+from app.models import User, Like, Comment, CommentLike
+from app.utils import  send_email_otp
+from app.oauth2 import SECRET_KEY, ALGORITHM, get_current_user
+from app.schemas import OTPVerification, LoginRequest, LikeCreate, LikeResponse, CommentCreate, CommentResponse, CommentLikeCreate, CommentLikeResponse, TokenResponse
+ 
 
 from app.models import User
 
@@ -71,23 +72,31 @@ async def verify_otp(otp_request: OTPVerification, db: Session = Depends(get_db)
     return {"message": "Account verified successfully"}
 
 
-@router.post("/login")
+@router.post("/login", response_model=TokenResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db)):
+   
     user = db.query(User).filter(User.email == request.email).first()
+
+   
     if not user or not bcrypt.checkpw(request.password.encode(), user.password_hash.encode()):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
+ 
     if not user.verified:
         raise HTTPException(status_code=403, detail="Account not verified. Please verify OTP.")
 
+    
     token = jwt.encode(
         {"user_id": user.id, "exp": datetime.utcnow() + timedelta(hours=2)},
         SECRET_KEY,
         algorithm="HS256",
     )
 
-    return {"access_token": token, "token_type": "bearer"}
+   
+    print(f"Generated Token: {token}")
 
+
+    return {"access_token": token, "token_type": "bearer"}
 
 class ForgotPasswordRequest(BaseModel):
     email: str
@@ -140,3 +149,65 @@ async def reset_password(token: str, request: ResetPasswordRequest, db: Session 
     db.commit()
 
     return {"message": "Password has been reset successfully"}
+
+
+@router.post("/like/", response_model=LikeResponse)
+def like_post(
+    like: LikeCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+   
+    post_id = like.post_id  
+
+   
+    new_like = Like(user_id=current_user.id, post_id=post_id)
+
+    db.add(new_like)
+    db.commit()
+    db.refresh(new_like)
+    return new_like
+
+
+@router.post("/comment/", response_model=CommentResponse)
+def add_comment(
+    comment: CommentCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    new_comment = Comment(
+        user_id=current_user.id,  
+        post_id=comment.post_id,
+        content=comment.content
+    )
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+    return new_comment
+
+
+
+@router.post("/comment/like/", response_model=CommentLikeResponse)
+def like_comment(
+    comment_like: CommentLikeCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    new_comment_like = CommentLike(
+        user_id=current_user.id,  
+        comment_id=comment_like.comment_id
+    )
+    db.add(new_comment_like)
+    db.commit()
+    db.refresh(new_comment_like)
+    return new_comment_like
+
+
+
+
+
+
+
+
+
+
