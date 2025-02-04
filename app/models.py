@@ -4,6 +4,8 @@ from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from .database import Base
 from datetime import datetime
+from pydantic import BaseModel
+from typing import Optional
 
 
 class Post(Base):
@@ -94,3 +96,8 @@ class CommentLike(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     comment_id = Column(Integer, ForeignKey('comments.id'), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    
+class UserProfile(BaseModel):
+    username: str
+    email: str

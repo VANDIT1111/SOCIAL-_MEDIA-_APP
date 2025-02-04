@@ -3,9 +3,9 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app import models
 from app.database import get_db, engine
-from app.models import User
+from app.models import User, UserProfile
 from passlib.context import CryptContext
-from app.routers import post, user, auth, vote, follow
+from app.routers import post, user, auth, vote, follow, profile
 from app.config import SECRET_KEY
 
 fastapi_app = FastAPI()
@@ -16,7 +16,7 @@ fastapi_app.include_router(user.router)
 fastapi_app.include_router(auth.router)
 fastapi_app.include_router(vote.router)
 fastapi_app.include_router(follow.router)
-
+fastapi_app.include_router(profile.router)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -27,10 +27,7 @@ def on_startup():
    
     models.Base.metadata.create_all(bind=engine)
     
+  
 
-def get_db():
-    db = db.SessionLocal() 
-    try:
-        yield db
-    finally:
-        db.close()
+
+
