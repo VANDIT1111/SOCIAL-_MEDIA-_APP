@@ -2,7 +2,8 @@ from fastapi import FastAPI, HTTPException, Depends, APIRouter
 from app.models import User, UserProfile
 from sqlalchemy.orm import Session
 from app.database import get_db
-router = APIRouter()
+
+router = APIRouter(tags=['PROFILE'])
 
 
 @router.get("/profile/{username}", response_model=UserProfile)

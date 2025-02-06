@@ -6,23 +6,59 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from jose import jwt
+from app import schemas
+from app import models
+from app import oauth2
 from app.database import get_db
 from app.models import User, Like, Comment, CommentLike
 from app.utils import  send_email_otp
 from app.oauth2 import SECRET_KEY, ALGORITHM, get_current_user
 from app.schemas import OTPVerification, LoginRequest, LikeCreate, LikeResponse, CommentCreate, CommentResponse, CommentLikeCreate, CommentLikeResponse, TokenResponse
- 
+
 
 from app.models import User
 
-router = APIRouter(tags=['Authentication'])
+router = APIRouter(tags=['USER AUTHENTICATION'])
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-@router.post("/signup")
-async def signup(username: str, email: str, password: str, db: Session = Depends(get_db)):
+@router.post("/create", response_model=schemas.UserOut)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    
+    existing_user = db.query(models.User).filter(models.User.email == user.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email is already registered")
+
+    
+    hashed_password = oauth2.hash_password(user.password)  
+
+  
+    new_user = models.User(email=user.email, password=hashed_password)
+
+   
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
+
+
+@router.get('/{id}', response_model=schemas.UserOut)
+def get_user(id: int, db: Session = Depends(get_db), ):
+
+    user = db.query(models.User).filter(models.User.id == id).first()
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,  detail=f"User with id: {id} does not exist")
+                           
+
+    return user
+
+
+@router.post("/register")
+async def register(username: str, email: str, password: str, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -151,56 +187,6 @@ async def reset_password(token: str, request: ResetPasswordRequest, db: Session 
     return {"message": "Password has been reset successfully"}
 
 
-@router.post("/like/", response_model=LikeResponse)
-def like_post(
-    like: LikeCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-   
-    post_id = like.post_id  
-
-   
-    new_like = Like(user_id=current_user.id, post_id=post_id)
-
-    db.add(new_like)
-    db.commit()
-    db.refresh(new_like)
-    return new_like
-
-
-@router.post("/comment/", response_model=CommentResponse)
-def add_comment(
-    comment: CommentCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    new_comment = Comment(
-        user_id=current_user.id,  
-        post_id=comment.post_id,
-        content=comment.content
-    )
-    db.add(new_comment)
-    db.commit()
-    db.refresh(new_comment)
-    return new_comment
-
-
-
-@router.post("/comment/like/", response_model=CommentLikeResponse)
-def like_comment(
-    comment_like: CommentLikeCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    new_comment_like = CommentLike(
-        user_id=current_user.id,  
-        comment_id=comment_like.comment_id
-    )
-    db.add(new_comment_like)
-    db.commit()
-    db.refresh(new_comment_like)
-    return new_comment_like
 
 
 

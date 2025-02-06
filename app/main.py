@@ -5,14 +5,14 @@ from app import models
 from app.database import get_db, engine
 from app.models import User, UserProfile
 from passlib.context import CryptContext
-from app.routers import post, user, auth, vote, follow, profile
+from app.routers import post, like_comment, auth, vote, follow, profile
 from app.config import SECRET_KEY
 
 fastapi_app = FastAPI()
 
 
 fastapi_app.include_router(post.router)
-fastapi_app.include_router(user.router)
+fastapi_app.include_router(like_comment.router)
 fastapi_app.include_router(auth.router)
 fastapi_app.include_router(vote.router)
 fastapi_app.include_router(follow.router)

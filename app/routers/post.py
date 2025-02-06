@@ -6,7 +6,7 @@ from app import models, schemas, oauth2
 from app.database import get_db
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(tags=['POST'])
 
 
 class PostWithVotes(BaseModel):
