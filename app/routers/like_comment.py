@@ -1,11 +1,10 @@
-from typing import Optional,List  
-from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
+from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
-from .. import models, schemas, utils, oauth2
-from ..database import get_db
-from ..schemas import CommentCreate, CommentLikeCreate, CommentLikeResponse, CommentResponse
-from ..oauth2 import get_current_user
-from ..models import User, Comment, CommentLike
+from app import models, schemas, oauth2
+from app.database import get_db
+from app.schemas import CommentLikeCreate, CommentLikeResponse
+from app.oauth2 import get_current_user
+from app.models import User, Comment, CommentLike
 
 router = APIRouter(tags=['LIKE/COMMENT']
 

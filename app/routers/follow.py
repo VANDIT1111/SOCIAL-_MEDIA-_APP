@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User
-from app.routers.auth import get_current_user  
+from app.oauth2 import get_current_user
+
 
 router = APIRouter(
     prefix="/follow",

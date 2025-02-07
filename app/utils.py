@@ -1,13 +1,8 @@
-from fastapi import FastAPI, HTTPException
 from passlib.context import CryptContext
 import aiosmtplib
 from email.message import EmailMessage
 from dotenv import load_dotenv
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import os
-from .config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

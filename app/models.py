@@ -2,10 +2,9 @@ from sqlalchemy import Column, DateTime, Integer, String, Boolean, ForeignKey, f
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
-from .database import Base
+from app.database import Base
 from datetime import datetime
 from pydantic import BaseModel
-from typing import Optional
 
 
 class Post(Base):

@@ -1,12 +1,8 @@
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
 from app import models
-from app.database import get_db, engine
-from app.models import User, UserProfile
+from app.database import engine
 from passlib.context import CryptContext
 from app.routers import post, like_comment, auth, vote, follow, profile
-from app.config import SECRET_KEY
 
 fastapi_app = FastAPI()
 

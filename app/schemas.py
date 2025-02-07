@@ -1,8 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import Optional, List
 
-from pydantic.types import conint
 
 class PostBase(BaseModel):
     title: str

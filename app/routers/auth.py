@@ -10,10 +10,10 @@ from app import schemas
 from app import models
 from app import oauth2
 from app.database import get_db
-from app.models import User, Like, Comment, CommentLike
+from app.models import User
 from app.utils import  send_email_otp
-from app.oauth2 import SECRET_KEY, ALGORITHM, get_current_user
-from app.schemas import OTPVerification, LoginRequest, LikeCreate, LikeResponse, CommentCreate, CommentResponse, CommentLikeCreate, CommentLikeResponse, TokenResponse
+from app.oauth2 import SECRET_KEY, ALGORITHM
+from app.schemas import OTPVerification, LoginRequest, TokenResponse
 
 
 from app.models import User

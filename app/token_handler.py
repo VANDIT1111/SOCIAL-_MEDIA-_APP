@@ -1,5 +1,5 @@
 from itsdangerous import URLSafeTimedSerializer
-from .config import settings
+from app.config import settings
 
 
 SECRET_KEY = settings.secret_key
