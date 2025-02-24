@@ -1,30 +1,21 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
+import os
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:1111@localhost:5432/fastapi"
-
-
+# Load environment variables from .env file
 load_dotenv()
 
-SECRET_KEY = "settings.secrect_key"
-
 class Settings(BaseSettings):
-    database_hostname: str
-    database_port: str
-    database_password: str
-    database_name: str
-    database_username: str  
-    secret_key: str  
-    algorithm: str
-    access_token_expire_minutes: int
-    DATABASE_URL: str
-  
-
-    class Config:
-        env_file = ".env"  
+    database_hostname: str = os.getenv("database_hostname")
+    database_port: str = os.getenv("database_port")
+    database_password: str = os.getenv("database_password")
+    database_name: str = os.getenv("database_name")
+    database_username: str = os.getenv("database_username")
+    secret_key: str = os.getenv("secret_key")
+    algorithm: str = os.getenv("algorithm")
+    access_token_expire_minutes: int = int(os.getenv("access_token_expire_minutes", 30))
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
 
 settings = Settings()
 
-
-print(settings.dict()) 
 

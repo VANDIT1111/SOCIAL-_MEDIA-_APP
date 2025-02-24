@@ -1,0 +1,9 @@
+fastapi[all]
+pydantic
+openai
+alembic
+email_validator
+psycopg2
+passlib[bcrypt]
+python-jose[cryptography]
+aiosmtplib

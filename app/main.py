@@ -1,8 +1,19 @@
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+print("✅ Updated PYTHONPATH:", sys.path)
+
+
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app import models
 from app.database import engine
 from passlib.context import CryptContext
 from app.routers import post, like_comment, auth, vote, follow, profile
+import logging
 
 fastapi_app = FastAPI()
 
@@ -17,13 +28,21 @@ fastapi_app.include_router(profile.router)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-@fastapi_app.on_event("startup")
-def on_startup():
-    print("FastAPI app started. Creating database tables...")
-   
-    models.Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("App is starting...")  # Startup actions here
+    yield
+    print("App is shutting down...")  # Shutdown actions here
+
+app = FastAPI(lifespan=lifespan)
     
   
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+logger.info("🚀 Application is starting...")
+
+if __name__ == "__main__":
+    print("✅ App started!") 
 

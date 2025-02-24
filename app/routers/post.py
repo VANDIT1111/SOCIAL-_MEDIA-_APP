@@ -4,17 +4,19 @@ from typing import List, Optional
 from sqlalchemy import func
 from app import models, schemas, oauth2
 from app.database import get_db
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 router = APIRouter(tags=['POST'])
 
 
+from app.schemas import PostResponse  # Use the correct model
+
 class PostWithVotes(BaseModel):
-    post: schemas.Post  
+    post: PostResponse  # Reference the renamed model correctly
     votes: int
 
-    class Config:
-        orm_mode = True
+
+    model_config = ConfigDict(from_attributes=True)
 
 @router.get("/", response_model=List[schemas.PostWithVotes])
 def get_posts(
@@ -36,12 +38,12 @@ def get_posts(
                 .all()
     
     return [
-        PostWithVotes(post=schemas.Post.from_orm(post), votes=votes)
+        PostWithVotes(post=PostResponse.from_orm(post), votes=votes)
         for post, votes in results
     ]
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=PostResponse)
 def create_posts(
     post: schemas.PostCreate, 
     db: Session = Depends(get_db), 
@@ -78,7 +80,7 @@ def delete_post(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.put("/{id}", response_model=schemas.Post)
+@router.put("/{id}", response_model=PostResponse)
 def update_post(
     id: int, 
     updated_post: schemas.PostCreate, 
