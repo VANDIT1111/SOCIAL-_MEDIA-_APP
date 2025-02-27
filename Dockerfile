@@ -14,7 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port your app runs on
-EXPOSE 8000
+EXPOSE 8080
 
 # Run the application (Direct File Execution)
-CMD ["python", "/hello/app/main.py"]
+CMD ["uvicorn", "app.main:fastapi_app", "--host", "0.0.0.0", "--port", "8000"]
+
+

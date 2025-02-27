@@ -1,0 +1,28 @@
+services:
+  app:
+    build: .
+    container_name: fastapi_app
+    image: social_media_app
+    restart: always
+    ports:
+      - "8000:8000"  # Exposing port 8000 instead of 8080
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://postgres:1111@db:5432/fastapi"
+
+  db:
+    image: postgres:latest
+    container_name: my_postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1111
+      POSTGRES_DB: fastapi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
